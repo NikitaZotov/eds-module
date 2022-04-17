@@ -2,315 +2,311 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-struct SplayTree
-{
-    struct SplayNode
-    {
-        struct SplayNode *leftChild;
-        struct SplayNode *rightChild;
-        struct SplayNode *parent;
-        int data;
-    } * root;
-};
+int error_value = -1;
 
-struct SplayNode *newNode(int *data)
+typedef struct splay_node
 {
-    struct SplayNode *node = malloc(sizeof(*node));
-    node->data = *data;
-    node->leftChild = node->rightChild = NULL;
+    struct splay_node * left;
+    struct splay_node * right;
+    struct splay_node * parent;
+    int data;
+} splay_node;
+
+typedef struct splay_tree
+{
+    splay_node * root;
+} splay_tree;
+
+splay_node *new_node(int *data)
+{
+    splay_node * node = malloc(sizeof( * node));
+    node->data = * data;
+    node->left = node->right = NULL;
     return node;
 }
 
-void deleteNode(struct SplayNode *node)
+void delete_node(splay_node * node)
 {
-    free(node->leftChild);
-    free(node->rightChild);
+    free(node->left);
+    free(node->right);
 }
 
-struct SplayNode *_Minimum(struct SplayNode *localRoot)
+splay_node * minimum(splay_node * localRoot)
 {
-    struct SplayNode *minimum = localRoot;
+    splay_node * minimum = localRoot;
 
-    while (minimum->leftChild != NULL)
-        minimum = minimum->leftChild;
+    while (minimum->left != NULL)
+        minimum = minimum->left;
 
     return minimum;
 }
 
-struct SplayNode *_Maximum(struct SplayNode *localRoot)
+splay_node * maximum(splay_node * local_root)
 {
-    struct SplayNode *maximum = localRoot;
+    splay_node * maximum = local_root;
 
-    while (maximum->rightChild != NULL)
-        maximum = maximum->rightChild;
+    while (maximum->right != NULL)
+        maximum = maximum->right;
 
     return maximum;
 }
 
-struct SplayNode *_Predecessor(struct SplayTree *tree, struct SplayNode *localRoot)
+splay_node * _predecessor(splay_tree * tree, splay_node * local_root)
 {
-    struct SplayNode *predecessor = localRoot;
-    if (predecessor->leftChild != NULL)
+    splay_node *_predecessor = local_root;
+    if (_predecessor->left != NULL)
     {
-        predecessor = _Maximum(predecessor->leftChild);
+        _predecessor = maximum(_predecessor->left);
     }
     else
     {
-        while (predecessor != tree->root || predecessor != predecessor->parent->rightChild)
+        while (_predecessor != tree->root || _predecessor != _predecessor->parent->right)
         {
-            predecessor = predecessor->parent;
+            _predecessor = _predecessor->parent;
         }
     }
-    return predecessor;
+    return _predecessor;
 }
 
-struct SplayNode *_Successor(struct SplayTree *tree, struct SplayNode *localRoot)
+splay_node * _successor(splay_tree * tree, splay_node * local_root)
 {
-    struct SplayNode *successor = localRoot;
-    if (successor->rightChild != NULL)
+    splay_node * _successor = local_root;
+    if (_successor->right != NULL)
     {
-        successor = _Minimum(successor->rightChild);
+        _successor = minimum(_successor->right);
     }
     else
     {
-        while (successor != tree->root || successor != successor->parent->leftChild)
+        while (_successor != tree->root || _successor != _successor->parent->left)
         {
-            successor = successor->parent;
+            _successor = _successor->parent;
         }
     }
-    return successor;
+    return _successor;
 }
 
-void _Transplant(struct SplayTree *tree, struct SplayNode *localParent, struct SplayNode *localChild)
+void transplant(splay_tree * tree, splay_node * local_parent, splay_node * local_child)
 {
-    if (localParent->parent == NULL)
-        tree->root = localChild;
-    else if (localParent == localParent->parent->leftChild)
-        localParent->parent->leftChild = localChild;
-    else if (localParent == localParent->parent->rightChild)
-        localParent->parent->rightChild = localChild;
+    if (local_parent->parent == NULL)
+        tree->root = local_child;
+    else if (local_parent == local_parent->parent->left)
+        local_parent->parent->left = local_child;
+    else if (local_parent == local_parent->parent->right)
+        local_parent->parent->right = local_child;
 
-    if (localChild != NULL)
-        localChild->parent = localParent->parent;
+    if (local_child != NULL)
+        local_child->parent = local_parent->parent;
 }
 
-void _LeftRotate(struct SplayTree *tree, struct SplayNode *localRoot)
+void left_rotate(splay_tree * tree, splay_node * local_root)
 {
-    struct SplayNode *rightChild = localRoot->rightChild;
-    localRoot->rightChild = rightChild->leftChild;
-    if (rightChild->leftChild != NULL)
-        rightChild->leftChild->parent = localRoot;
+    splay_node *right = local_root->right;
+    local_root->right = right->left;
+    if (right->left != NULL)
+        right->left->parent = local_root;
 
-    _Transplant(tree, localRoot, rightChild);
+    transplant(tree, local_root, right);
 
-    rightChild->leftChild = localRoot;
-    rightChild->leftChild->parent = rightChild;
+    right->left = local_root;
+    right->left->parent = right;
 }
 
-void _RightRotate(struct SplayTree *tree, struct SplayNode *localRoot)
+void right_rotate(splay_tree * tree, splay_node * local_root)
 {
-    struct SplayNode *leftChild = localRoot->leftChild;
+    splay_node * left = local_root->left;
 
-    localRoot->leftChild = leftChild->rightChild;
-    if (leftChild->rightChild != NULL)
-        leftChild->rightChild->parent = localRoot;
+    local_root->left = left->right;
+    if (left->right != NULL)
+        left->right->parent = local_root;
 
-    _Transplant(tree, localRoot, leftChild);
+    transplant(tree, local_root, left);
 
-    leftChild->rightChild = localRoot;
-    leftChild->rightChild->parent = leftChild;
+    left->right = local_root;
+    left->right->parent = left;
 }
 
-void _Splay(struct SplayTree *tree, struct SplayNode *pivotElement)
+void splay(splay_tree * tree, splay_node * pivot_element)
 {
-    while (pivotElement != tree->root)
+    while (pivot_element != tree->root)
     {
-        if (pivotElement->parent == tree->root)
+        if (pivot_element->parent == tree->root)
         {
-            if (pivotElement == pivotElement->parent->leftChild)
+            if (pivot_element == pivot_element->parent->left)
             {
-                _RightRotate(tree, pivotElement->parent);
+                right_rotate(tree, pivot_element->parent);
             }
 
-            else if (pivotElement == pivotElement->parent->rightChild)
+            else if (pivot_element == pivot_element->parent->right)
             {
-                _LeftRotate(tree, pivotElement->parent);
+                left_rotate(tree, pivot_element->parent);
             }
         }
         else
         {
             // Zig-Zig step.
-            if (pivotElement == pivotElement->parent->leftChild &&
-                pivotElement->parent->parent != NULL &&
-                pivotElement->parent == pivotElement->parent->parent->leftChild)
+            if (pivot_element == pivot_element->parent->left &&
+                pivot_element->parent->parent != NULL &&
+                pivot_element->parent == pivot_element->parent->parent->left)
             {
 
-                _RightRotate(tree, pivotElement->parent->parent);
-                _RightRotate(tree, pivotElement->parent);
+                right_rotate(tree, pivot_element->parent->parent);
+                right_rotate(tree, pivot_element->parent);
             }
-            
-            else if (pivotElement->parent->parent != NULL &&
-                     pivotElement->parent->parent && pivotElement == pivotElement->parent->rightChild &&
-                     pivotElement->parent == pivotElement->parent->parent->rightChild)
+
+            else if (pivot_element->parent->parent != NULL &&
+                     pivot_element->parent->parent && pivot_element == pivot_element->parent->right &&
+                     pivot_element->parent == pivot_element->parent->parent->right)
             {
-                _LeftRotate(tree, pivotElement->parent->parent);
-                _LeftRotate(tree, pivotElement->parent);
+                left_rotate(tree, pivot_element->parent->parent);
+                left_rotate(tree, pivot_element->parent);
             }
             // Zig-Zag step.
-            else if (pivotElement == pivotElement->parent->rightChild &&
-                     pivotElement->parent->parent != NULL &&
-                     pivotElement->parent == pivotElement->parent->parent->leftChild)
+            else if (pivot_element == pivot_element->parent->right &&
+                     pivot_element->parent->parent != NULL &&
+                     pivot_element->parent == pivot_element->parent->parent->left)
             {
 
-                _LeftRotate(tree, pivotElement->parent);
-                _RightRotate(tree, pivotElement->parent);
+                left_rotate(tree, pivot_element->parent);
+                right_rotate(tree, pivot_element->parent);
             }
-            else if (pivotElement == pivotElement->parent->leftChild &&
-                     pivotElement->parent->parent != NULL &&
-                     pivotElement->parent == pivotElement->parent->parent->rightChild)
+            else if (pivot_element == pivot_element->parent->left &&
+                     pivot_element->parent->parent != NULL &&
+                     pivot_element->parent == pivot_element->parent->parent->right)
             {
 
-                _RightRotate(tree, pivotElement->parent);
-                _LeftRotate(tree, pivotElement->parent);
+                right_rotate(tree, pivot_element->parent);
+                left_rotate(tree, pivot_element->parent);
             }
         }
     }
 }
 
-struct SplayNode *_Search(struct SplayTree *tree, int *key)
+splay_node * _search(splay_tree * tree, int * key)
 {
-    struct SplayNode *searchedElement = tree->root;
+    splay_node * _searchedElement = tree->root;
 
-    while (searchedElement != NULL)
+    while (_searchedElement != NULL)
     {
-        if (searchedElement->data < *key)
-            searchedElement = searchedElement->rightChild;
-        else if (*key < searchedElement->data)
-            searchedElement = searchedElement->leftChild;
-        else if (searchedElement->data == *key)
+        if (_searchedElement->data < * key)
+            _searchedElement = _searchedElement->right;
+        else if ( * key < _searchedElement->data)
+            _searchedElement = _searchedElement->left;
+        else if (_searchedElement->data == * key)
         {
-            _Splay(tree, searchedElement);
-            return searchedElement;
+            splay(tree, _searchedElement);
+            return _searchedElement;
         }
     }
     return NULL;
 }
 
-struct SplayTree *newTree()
+splay_tree * new_tree()
 {
-    struct SplayTree *tree = malloc(sizeof(*tree));
-    tree->root = malloc(sizeof(*tree->root));
+    splay_tree * tree = malloc(sizeof( * tree));
+    tree->root = malloc(sizeof( * tree->root));
     tree->root = NULL;
     return tree;
 }
 
-void deleteTree(struct SplayTree *tree)
+void delete_tree(splay_tree * tree)
 {
     free(tree);
 }
 
-void Insert(struct SplayTree *tree, int *key)
+void insert(splay_tree * tree, int * key)
 {
-    struct SplayNode *preInsertPlace = malloc(sizeof(*preInsertPlace));
-    preInsertPlace = NULL;
-    struct SplayNode *insertPlace = tree->root;
+    splay_node * pre_insert_place = malloc(sizeof( * pre_insert_place));
+    pre_insert_place = NULL;
+    splay_node * insert_place = tree->root;
 
-    while (insertPlace != NULL)
+    while (insert_place != NULL)
     {
-        preInsertPlace = insertPlace;
+        pre_insert_place = insert_place;
 
-        if (insertPlace->data < *key)
-            insertPlace = insertPlace->rightChild;
-        else if (*key <= insertPlace->data)
-            insertPlace = insertPlace->leftChild;
+        if (insert_place->data < * key)
+            insert_place = insert_place->right;
+        else if (* key <= insert_place->data)
+            insert_place = insert_place->left;
     }
-    struct SplayNode *insertElement = newNode(key);
-    insertElement->parent = preInsertPlace;
-    if (preInsertPlace == NULL)
-        tree->root = insertElement;
-    else if (preInsertPlace->data < insertElement->data)
-        preInsertPlace->rightChild = insertElement;
-    else if (insertElement->data < preInsertPlace->data)
-        preInsertPlace->leftChild = insertElement;
-    _Splay(tree, insertElement);
+    splay_node * insert_element = new_node(key);
+    insert_element->parent = pre_insert_place;
+    if (pre_insert_place == NULL)
+        tree->root = insert_element;
+    else if (pre_insert_place->data < insert_element->data)
+        pre_insert_place->right = insert_element;
+    else if (insert_element->data < pre_insert_place->data)
+        pre_insert_place->left = insert_element;
+    splay(tree, insert_element);
 }
 
-void Remove(struct SplayTree *tree, int *key)
+void remove_node(splay_tree *tree, int *key)
 {
-    struct SplayNode *removeElement = _Search(tree, key);
+    splay_node *removeElement = _search(tree, key);
 
     if (removeElement != NULL)
     {
-        if (removeElement->rightChild == NULL)
-            _Transplant(tree, removeElement, removeElement->leftChild);
-        else if (removeElement->leftChild == NULL)
-            _Transplant(tree, removeElement, removeElement->rightChild);
+        if (removeElement->right == NULL)
+            transplant(tree, removeElement, removeElement->left);
+        else if (removeElement->left == NULL)
+            transplant(tree, removeElement, removeElement->right);
         else
         {
-            struct SplayNode *newLocalRoot = _Minimum(removeElement->rightChild);
+            splay_node *newLocalRoot = minimum(removeElement->right);
 
             if (newLocalRoot->parent != removeElement)
             {
 
-                _Transplant(tree, newLocalRoot, newLocalRoot->rightChild);
+                transplant(tree, newLocalRoot, newLocalRoot->right);
 
-                newLocalRoot->rightChild = removeElement->rightChild;
-                newLocalRoot->rightChild->parent = newLocalRoot;
+                newLocalRoot->right = removeElement->right;
+                newLocalRoot->right->parent = newLocalRoot;
             }
 
-            _Transplant(tree, removeElement, newLocalRoot);
+            transplant(tree, removeElement, newLocalRoot);
 
-            newLocalRoot->leftChild = removeElement->leftChild;
-            newLocalRoot->leftChild->parent = newLocalRoot;
+            newLocalRoot->left = removeElement->left;
+            newLocalRoot->left->parent = newLocalRoot;
 
-            _Splay(tree, newLocalRoot);
+            splay(tree, newLocalRoot);
         }
 
         free(removeElement);
     }
 }
 
-bool Search(struct SplayTree *tree, int *key)
-{
-    return _Search(tree, key) != NULL;
-}
-
-bool isEmpty(struct SplayTree *tree)
+bool is_empty(splay_tree *tree)
 {
     return tree->root == NULL;
 }
 
-int Successor(struct SplayTree *tree, int *key)
+int successor(splay_tree *tree, int *key)
 {
-    if (_Successor(tree, _Search(tree, key)) != NULL)
+    if (_successor(tree, _search(tree, key)) != NULL)
     {
-        return _Successor(tree, _Search(tree, key))->data;
+        return _successor(tree, _search(tree, key))->data;
     }
     else
     {
-        return -1;
+        return error_value;
     }
 }
 
-int Predecessor(struct SplayTree *tree, int *key)
+int predecessor(splay_tree *tree, int *key)
 {
-    if (_Predecessor(tree, _Search(tree, key)) != NULL)
+    if (_predecessor(tree, _search(tree, key)) != NULL)
     {
-        return _Predecessor(tree, _Search(tree, key))->data;
+        return _predecessor(tree, _search(tree, key))->data;
     }
     else
     {
-        return -1;
+        return error_value;
     }
 }
 
-int main(int argc, char const *argv[])
+bool search(splay_tree * tree, int *key)
 {
-    struct SplayTree *tree = newTree();
-    int a = 8;
-    int b = 10;
-    Insert(tree, &a);
-    Insert(tree, &b);
-    printf("%d", Search(tree, &b));
-    return 0;
+    if(_search(tree, key) != NULL){
+        return true;
+    }
+    return false;
 }
