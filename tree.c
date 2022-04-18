@@ -305,7 +305,7 @@ int predecessor(splay_tree * tree, int * key)
 
 bool search(splay_tree * tree, int * key)
 {
-    if(_search(tree, key) != NULL){
+    if (_search(tree, key) != NULL){
         return true;
     }
     return false;

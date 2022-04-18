@@ -53,8 +53,8 @@ bool delete_test()
     }
     for (int index=0; index < 10; ++index)
     {
-        if(index < 5 && search(tree, &elements_to_insert[index])) return false;
-        if(index > 5 && !search(tree, &elements_to_insert[index])) return false;
+        if (index < 5 && search(tree, &elements_to_insert[index])) return false;
+        if (index > 5 && !search(tree, &elements_to_insert[index])) return false;
     }
     return true;
 }
