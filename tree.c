@@ -17,7 +17,7 @@ typedef struct splay_tree
     splay_node * root;
 } splay_tree;
 
-splay_node *new_node(int *data)
+splay_node * new_node(int * data)
 {
     splay_node * node = malloc(sizeof( * node));
     node->data = * data;
@@ -100,7 +100,7 @@ void transplant(splay_tree * tree, splay_node * local_parent, splay_node * local
 
 void left_rotate(splay_tree * tree, splay_node * local_root)
 {
-    splay_node *right = local_root->right;
+    splay_node * right = local_root->right;
     local_root->right = right->left;
     if (right->left != NULL)
         right->left->parent = local_root;
@@ -225,7 +225,7 @@ void insert(splay_tree * tree, int * key)
 
         if (insert_place->data < * key)
             insert_place = insert_place->right;
-        else if (* key <= insert_place->data)
+        else if ( * key <= insert_place->data)
             insert_place = insert_place->left;
     }
     splay_node * insert_element = new_node(key);
@@ -239,9 +239,9 @@ void insert(splay_tree * tree, int * key)
     splay(tree, insert_element);
 }
 
-void remove_node(splay_tree *tree, int *key)
+void remove_node(splay_tree * tree, int * key)
 {
-    splay_node *removeElement = _search(tree, key);
+    splay_node * removeElement = _search(tree, key);
 
     if (removeElement != NULL)
     {
@@ -274,12 +274,12 @@ void remove_node(splay_tree *tree, int *key)
     }
 }
 
-bool is_empty(splay_tree *tree)
+bool is_empty(splay_tree * tree)
 {
     return tree->root == NULL;
 }
 
-int successor(splay_tree *tree, int *key)
+int successor(splay_tree * tree, int * key)
 {
     if (_successor(tree, _search(tree, key)) != NULL)
     {
@@ -291,7 +291,7 @@ int successor(splay_tree *tree, int *key)
     }
 }
 
-int predecessor(splay_tree *tree, int *key)
+int predecessor(splay_tree * tree, int * key)
 {
     if (_predecessor(tree, _search(tree, key)) != NULL)
     {
@@ -303,7 +303,7 @@ int predecessor(splay_tree *tree, int *key)
     }
 }
 
-bool search(splay_tree * tree, int *key)
+bool search(splay_tree * tree, int * key)
 {
     if(_search(tree, key) != NULL){
         return true;

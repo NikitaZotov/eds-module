@@ -5,15 +5,15 @@ bool insert_test()
     splay_tree * tree = new_tree();
     int a[5] = {1, 2, 3, 4, 5};
     int index = 0;
-    while(index < 5)
+    while (index < 5)
     {
         insert(tree, &a[index]);
         ++index;
     }
     index = 0;
-    while(index < 5)
+    while (index < 5)
     {
-        if(!search(tree, &a[index]))
+        if (!search(tree, &a[index]))
         {
             return false;
         }
@@ -21,9 +21,9 @@ bool insert_test()
     }
     int b[] = {10, 11, 12, 13, 14};
     index = 0;
-    while(index < 5)
+    while (index < 5)
     {
-        if(search(tree, &b[index]))
+        if (search(tree, &b[index]))
         {
             return false;
         }
@@ -42,16 +42,16 @@ bool delete_test()
 {
     splay_tree * tree = new_tree();
     int elements_to_insert[10];
-    for(int index=0; index < 10; ++index)
+    for (int index=0; index < 10; ++index)
     {
         elements_to_insert[index] = index + 1;  // 1 - 10
         insert(tree, &elements_to_insert[index]);
     }
-    for(int index=0; index < 10 / 2; ++index)
+    for (int index=0; index < 10 / 2; ++index)
     {
         remove_node(tree, &elements_to_insert[index]);
     }
-    for(int index=0; index < 10; ++index)
+    for (int index=0; index < 10; ++index)
     {
         if(index < 5 && search(tree, &elements_to_insert[index])) return false;
         if(index > 5 && !search(tree, &elements_to_insert[index])) return false;
@@ -61,9 +61,9 @@ bool delete_test()
 
 bool max_min_test()
 {
-    splay_tree* tree = new_tree();
+    splay_tree * tree = new_tree();
     int elements[] = {1, 2, 10, 4, 5};
-    for(int index = 0; index < 5; ++index)
+    for (int index = 0; index < 5; ++index)
     {
         insert(tree, &elements[index]);
     }
@@ -74,9 +74,9 @@ bool max_min_test()
 
 bool successor_predecessor_test()
 {
-    splay_tree* tree = new_tree();
+    splay_tree * tree = new_tree();
     int elements[] = {1, 2, 3, 4, 5};
-    for(int index = 0; index < 5; ++index)
+    for (int index = 0; index < 5; ++index)
     {
         insert(tree, &elements[index]);
     }
