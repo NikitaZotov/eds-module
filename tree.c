@@ -9,7 +9,7 @@ typedef struct splay_node
     struct splay_node * left;
     struct splay_node * right;
     struct splay_node * parent;
-    int data;
+    void * data;
 } splay_node;
 
 typedef struct splay_tree
@@ -17,10 +17,10 @@ typedef struct splay_tree
     splay_node * root;
 } splay_tree;
 
-splay_node * new_node(int * data)
+splay_node * new_node(void * data)
 {
     splay_node * node = malloc(sizeof( * node));
-    node->data = * data;
+    node->data = data;
     node->left = node->right = NULL;
     return node;
 }
@@ -181,17 +181,17 @@ void splay(splay_tree * tree, splay_node * pivot_element)
     }
 }
 
-splay_node * _search(splay_tree * tree, int * key)
+splay_node * _search(splay_tree * tree, void * key)
 {
     splay_node * _searchedElement = tree->root;
 
     while (_searchedElement != NULL)
     {
-        if (_searchedElement->data < * key)
+        if ( * _searchedElement->data < * key)
             _searchedElement = _searchedElement->right;
-        else if ( * key < _searchedElement->data)
+        else if ( * key < * _searchedElement->data)
             _searchedElement = _searchedElement->left;
-        else if (_searchedElement->data == * key)
+        else if ( * _searchedElement->data == * key)
         {
             splay(tree, _searchedElement);
             return _searchedElement;
@@ -213,7 +213,7 @@ void delete_tree(splay_tree * tree)
     free(tree);
 }
 
-void insert(splay_tree * tree, int * key)
+void insert(splay_tree * tree, void * key)
 {
     splay_node * pre_insert_place = malloc(sizeof( * pre_insert_place));
     pre_insert_place = NULL;
@@ -223,9 +223,9 @@ void insert(splay_tree * tree, int * key)
     {
         pre_insert_place = insert_place;
 
-        if (insert_place->data < * key)
+        if ( * insert_place->data < * key)
             insert_place = insert_place->right;
-        else if ( * key <= insert_place->data)
+        else if ( * key <= * insert_place->data)
             insert_place = insert_place->left;
     }
     splay_node * insert_element = new_node(key);
@@ -239,7 +239,7 @@ void insert(splay_tree * tree, int * key)
     splay(tree, insert_element);
 }
 
-void remove_node(splay_tree * tree, int * key)
+void remove_node(splay_tree * tree, void * key)
 {
     splay_node * removeElement = _search(tree, key);
 
@@ -279,7 +279,7 @@ bool is_empty(splay_tree * tree)
     return tree->root == NULL;
 }
 
-int successor(splay_tree * tree, int * key)
+int successor(splay_tree * tree, void * key)
 {
     if (_successor(tree, _search(tree, key)) != NULL)
     {
@@ -291,7 +291,7 @@ int successor(splay_tree * tree, int * key)
     }
 }
 
-int predecessor(splay_tree * tree, int * key)
+int predecessor(splay_tree * tree, void * key)
 {
     if (_predecessor(tree, _search(tree, key)) != NULL)
     {
@@ -303,7 +303,7 @@ int predecessor(splay_tree * tree, int * key)
     }
 }
 
-bool search(splay_tree * tree, int * key)
+bool search(splay_tree * tree, void * key)
 {
     if (_search(tree, key) != NULL){
         return true;

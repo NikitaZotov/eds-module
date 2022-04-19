@@ -86,3 +86,8 @@ bool successor_predecessor_test()
     }
     return true;
 }
+
+int main()
+{
+    return 0;
+}
