@@ -18,7 +18,7 @@ bool insert_test()
     int index = 0;
     while (index < 5)
     {
-        insert(tree, &a[index], bigger_predicate, equal_predicate);
+        insert(tree, &a[index], bigger_predicate);
         ++index;
     }
     index = 0;
@@ -53,16 +53,16 @@ bool delete_test()
 {
     splay_tree * tree = new_tree();
     int elements_to_insert[10];
-    for (int index=0; index < 10; ++index)
+    for (int index = 0; index < 10; ++index)
     {
         elements_to_insert[index] = index + 1;  // 1 - 10
-        insert(tree, &elements_to_insert[index], bigger_predicate, equal_predicate);
+        insert(tree, &elements_to_insert[index], bigger_predicate);
     }
-    for (int index=0; index < 10 / 2; ++index)
+    for (int index = 0; index < 10 / 2; ++index)
     {
         remove_node(tree, &elements_to_insert[index], bigger_predicate, equal_predicate);
     }
-    for (int index=0; index < 10; ++index)
+    for (int index = 0; index < 10; ++index)
     {
         if (index < 5 && search(tree, &elements_to_insert[index], bigger_predicate, equal_predicate))
         {
@@ -82,7 +82,7 @@ bool max_min_test()
     int elements[] = {1, 2, 10, 4, 5};
     for (int index = 0; index < 5; ++index)
     {
-        insert(tree, &elements[index], bigger_predicate, equal_predicate);
+        insert(tree, &elements[index], bigger_predicate);
     } 
     bool max_test = 10 == *(int *)maximum(tree->root)->data;
     bool min_test = 1 == *(int *)minimum(tree->root)->data;
@@ -95,7 +95,7 @@ bool successor_predecessor_test()
     int elements[] = {1, 2, 3, 4, 5};
     for (int index = 0; index < 5; ++index)
     {
-        insert(tree, &elements[index], bigger_predicate, equal_predicate);
+        insert(tree, &elements[index], bigger_predicate);
     }
     if (5 != *(int *)successor(tree, &elements[3], bigger_predicate, equal_predicate) || 4 != *(int *)predecessor(tree, &elements[4], bigger_predicate, equal_predicate))
     {

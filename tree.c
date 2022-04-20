@@ -20,7 +20,7 @@ typedef struct splay_tree
 
 splay_node * new_node(void * data)
 {
-    splay_node * node = malloc(sizeof(* node));
+    splay_node * node = malloc(sizeof(*node));
     node->data = data;
     node->left = node->right = NULL;
     return node;
@@ -208,14 +208,14 @@ splay_node * _search(splay_tree * tree, void * key, bool (* bigger_predicate)(vo
         {
             _searchedElement = _searchedElement->right;
         }
-        else if (bigger_predicate(_searchedElement->data, key))
-        {
-            _searchedElement = _searchedElement->left;
-        }
         else if (equal_predicate(_searchedElement->data, key))
         {
             splay(tree, _searchedElement);
             return _searchedElement;
+        }
+        else
+        {
+            _searchedElement = _searchedElement->left;
         }
     }
     return NULL;
@@ -223,8 +223,8 @@ splay_node * _search(splay_tree * tree, void * key, bool (* bigger_predicate)(vo
 
 splay_tree * new_tree()
 {
-    splay_tree * tree = malloc(sizeof(* tree));
-    tree->root = malloc(sizeof(* tree->root));
+    splay_tree * tree = malloc(sizeof(*tree));
+    tree->root = malloc(sizeof(*tree->root));
     tree->root = NULL;
     return tree;
 }
@@ -234,7 +234,7 @@ void delete_tree(splay_tree * tree)
     free(tree);
 }
 
-void insert(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, void *), bool (* equal_predicate)(void *, void *))
+void insert(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, void *))
 {
     splay_node * pre_insert_place = malloc(sizeof(* pre_insert_place));
     pre_insert_place = NULL;
@@ -248,7 +248,7 @@ void insert(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, voi
         {
             insert_place = insert_place->right;
         }
-        else if (bigger_predicate(insert_place->data, key) || equal_predicate(key, insert_place->data))
+        else
         {
             insert_place = insert_place->left;
         }
