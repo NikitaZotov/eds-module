@@ -1,5 +1,16 @@
 #include "tree.c"
 
+
+bool equal_predicate(void * first_element, void * second_element)
+{
+    return *(int *)(first_element) == *(int *)(second_element);
+}
+
+bool bigger_predicate(void * first_element, void * second_element)
+{
+    return *(int *)(first_element) > *(int *)(second_element);
+}
+
 bool insert_test()
 {
     splay_tree * tree = new_tree();
@@ -7,13 +18,13 @@ bool insert_test()
     int index = 0;
     while (index < 5)
     {
-        insert(tree, &a[index]);
+        insert(tree, &a[index], bigger_predicate, equal_predicate);
         ++index;
     }
     index = 0;
     while (index < 5)
     {
-        if (!search(tree, &a[index]))
+        if (!search(tree, &a[index], bigger_predicate, equal_predicate))
         {
             return false;
         }
@@ -23,7 +34,7 @@ bool insert_test()
     index = 0;
     while (index < 5)
     {
-        if (search(tree, &b[index]))
+        if (search(tree, &b[index], bigger_predicate, equal_predicate))
         {
             return false;
         }
@@ -45,16 +56,22 @@ bool delete_test()
     for (int index=0; index < 10; ++index)
     {
         elements_to_insert[index] = index + 1;  // 1 - 10
-        insert(tree, &elements_to_insert[index]);
+        insert(tree, &elements_to_insert[index], bigger_predicate, equal_predicate);
     }
     for (int index=0; index < 10 / 2; ++index)
     {
-        remove_node(tree, &elements_to_insert[index]);
+        remove_node(tree, &elements_to_insert[index], bigger_predicate, equal_predicate);
     }
     for (int index=0; index < 10; ++index)
     {
-        if (index < 5 && search(tree, &elements_to_insert[index])) return false;
-        if (index > 5 && !search(tree, &elements_to_insert[index])) return false;
+        if (index < 5 && search(tree, &elements_to_insert[index], bigger_predicate, equal_predicate))
+        {
+            return false;
+        }
+        if (index > 5 && !search(tree, &elements_to_insert[index], bigger_predicate, equal_predicate))
+        { 
+            return false;
+        }
     }
     return true;
 }
@@ -65,11 +82,11 @@ bool max_min_test()
     int elements[] = {1, 2, 10, 4, 5};
     for (int index = 0; index < 5; ++index)
     {
-        insert(tree, &elements[index]);
-    }
-    bool max_test = 10 == maximum(tree->root)->data;
-    bool min_test = 1 == minimum(tree->root)->data;
-    return max_test == true && min_test == true;
+        insert(tree, &elements[index], bigger_predicate, equal_predicate);
+    } 
+    bool max_test = 10 == *(int *)maximum(tree->root)->data;
+    bool min_test = 1 == *(int *)minimum(tree->root)->data;
+    return max_test && min_test;
 }
 
 bool successor_predecessor_test()
@@ -78,16 +95,11 @@ bool successor_predecessor_test()
     int elements[] = {1, 2, 3, 4, 5};
     for (int index = 0; index < 5; ++index)
     {
-        insert(tree, &elements[index]);
+        insert(tree, &elements[index], bigger_predicate, equal_predicate);
     }
-    if (5 != successor(tree, &elements[3]) || 4 != predecessor(tree, &elements[4]))
+    if (5 != *(int *)successor(tree, &elements[3], bigger_predicate, equal_predicate) || 4 != *(int *)predecessor(tree, &elements[4], bigger_predicate, equal_predicate))
     {
         return false;
     }
     return true;
-}
-
-int main()
-{
-    return 0;
 }

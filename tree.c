@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-int error_value = -1;
+int err = -1;
+void * error_value = &err;
 
 typedef struct splay_node
 {
@@ -19,7 +20,7 @@ typedef struct splay_tree
 
 splay_node * new_node(void * data)
 {
-    splay_node * node = malloc(sizeof( * node));
+    splay_node * node = malloc(sizeof(* node));
     node->data = data;
     node->left = node->right = NULL;
     return node;
@@ -36,7 +37,9 @@ splay_node * minimum(splay_node * localRoot)
     splay_node * minimum = localRoot;
 
     while (minimum->left != NULL)
+    {
         minimum = minimum->left;
+    }
 
     return minimum;
 }
@@ -46,14 +49,16 @@ splay_node * maximum(splay_node * local_root)
     splay_node * maximum = local_root;
 
     while (maximum->right != NULL)
+    {
         maximum = maximum->right;
+    }
 
     return maximum;
 }
 
 splay_node * _predecessor(splay_tree * tree, splay_node * local_root)
 {
-    splay_node *_predecessor = local_root;
+    splay_node * _predecessor = local_root;
     if (_predecessor->left != NULL)
     {
         _predecessor = maximum(_predecessor->left);
@@ -88,14 +93,22 @@ splay_node * _successor(splay_tree * tree, splay_node * local_root)
 void transplant(splay_tree * tree, splay_node * local_parent, splay_node * local_child)
 {
     if (local_parent->parent == NULL)
+    {
         tree->root = local_child;
+    }
     else if (local_parent == local_parent->parent->left)
+    {
         local_parent->parent->left = local_child;
+    }
     else if (local_parent == local_parent->parent->right)
+    {
         local_parent->parent->right = local_child;
+    }
 
     if (local_child != NULL)
+    {
         local_child->parent = local_parent->parent;
+    }
 }
 
 void left_rotate(splay_tree * tree, splay_node * local_root)
@@ -103,7 +116,9 @@ void left_rotate(splay_tree * tree, splay_node * local_root)
     splay_node * right = local_root->right;
     local_root->right = right->left;
     if (right->left != NULL)
+    {
         right->left->parent = local_root;
+    }
 
     transplant(tree, local_root, right);
 
@@ -117,7 +132,9 @@ void right_rotate(splay_tree * tree, splay_node * local_root)
 
     local_root->left = left->right;
     if (left->right != NULL)
+    {
         left->right->parent = local_root;
+    }
 
     transplant(tree, local_root, left);
 
@@ -181,17 +198,21 @@ void splay(splay_tree * tree, splay_node * pivot_element)
     }
 }
 
-splay_node * _search(splay_tree * tree, void * key)
+splay_node * _search(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, void *), bool (* equal_predicate)(void *, void *))
 {
     splay_node * _searchedElement = tree->root;
 
     while (_searchedElement != NULL)
     {
-        if ( * _searchedElement->data < * key)
+        if (bigger_predicate(key, _searchedElement->data))
+        {
             _searchedElement = _searchedElement->right;
-        else if ( * key < * _searchedElement->data)
+        }
+        else if (bigger_predicate(_searchedElement->data, key))
+        {
             _searchedElement = _searchedElement->left;
-        else if ( * _searchedElement->data == * key)
+        }
+        else if (equal_predicate(_searchedElement->data, key))
         {
             splay(tree, _searchedElement);
             return _searchedElement;
@@ -202,8 +223,8 @@ splay_node * _search(splay_tree * tree, void * key)
 
 splay_tree * new_tree()
 {
-    splay_tree * tree = malloc(sizeof( * tree));
-    tree->root = malloc(sizeof( * tree->root));
+    splay_tree * tree = malloc(sizeof(* tree));
+    tree->root = malloc(sizeof(* tree->root));
     tree->root = NULL;
     return tree;
 }
@@ -213,9 +234,9 @@ void delete_tree(splay_tree * tree)
     free(tree);
 }
 
-void insert(splay_tree * tree, void * key)
+void insert(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, void *), bool (* equal_predicate)(void *, void *))
 {
-    splay_node * pre_insert_place = malloc(sizeof( * pre_insert_place));
+    splay_node * pre_insert_place = malloc(sizeof(* pre_insert_place));
     pre_insert_place = NULL;
     splay_node * insert_place = tree->root;
 
@@ -223,32 +244,46 @@ void insert(splay_tree * tree, void * key)
     {
         pre_insert_place = insert_place;
 
-        if ( * insert_place->data < * key)
+        if (bigger_predicate(key, insert_place->data))
+        {
             insert_place = insert_place->right;
-        else if ( * key <= * insert_place->data)
+        }
+        else if (bigger_predicate(insert_place->data, key) || equal_predicate(key, insert_place->data))
+        {
             insert_place = insert_place->left;
+        }
     }
     splay_node * insert_element = new_node(key);
     insert_element->parent = pre_insert_place;
     if (pre_insert_place == NULL)
+    {
         tree->root = insert_element;
-    else if (pre_insert_place->data < insert_element->data)
+    }
+    else if (bigger_predicate(insert_element->data, pre_insert_place->data))
+    {
         pre_insert_place->right = insert_element;
-    else if (insert_element->data < pre_insert_place->data)
+    }
+    else if (bigger_predicate(pre_insert_place->data, insert_element->data))
+    {
         pre_insert_place->left = insert_element;
+    }
     splay(tree, insert_element);
 }
 
-void remove_node(splay_tree * tree, void * key)
+void remove_node(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, void *), bool (* equal_predicate)(void *, void *))
 {
-    splay_node * removeElement = _search(tree, key);
+    splay_node * removeElement = _search(tree, key, bigger_predicate, equal_predicate);
 
     if (removeElement != NULL)
     {
         if (removeElement->right == NULL)
+        {
             transplant(tree, removeElement, removeElement->left);
+        }
         else if (removeElement->left == NULL)
+        {
             transplant(tree, removeElement, removeElement->right);
+        }
         else
         {
             splay_node *newLocalRoot = minimum(removeElement->right);
@@ -279,11 +314,23 @@ bool is_empty(splay_tree * tree)
     return tree->root == NULL;
 }
 
-int successor(splay_tree * tree, void * key)
+void * successor(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, void *), bool (* equal_predicate)(void *, void *))
 {
-    if (_successor(tree, _search(tree, key)) != NULL)
+    if (_successor(tree, _search(tree, key, bigger_predicate, equal_predicate)) != NULL)
     {
-        return _successor(tree, _search(tree, key))->data;
+        return _successor(tree, _search(tree, key, bigger_predicate, equal_predicate))->data;
+    }
+    else
+    {
+        return (void *) &error_value;
+    }
+}
+
+void * predecessor(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, void *), bool (* equal_predicate)(void *, void *))
+{
+    if (_predecessor(tree, _search(tree, key, bigger_predicate, equal_predicate)) != NULL)
+    {
+        return _predecessor(tree, _search(tree, key, bigger_predicate, equal_predicate))->data;
     }
     else
     {
@@ -291,21 +338,9 @@ int successor(splay_tree * tree, void * key)
     }
 }
 
-int predecessor(splay_tree * tree, void * key)
+bool search(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, void *), bool (* equal_predicate)(void *, void *))
 {
-    if (_predecessor(tree, _search(tree, key)) != NULL)
-    {
-        return _predecessor(tree, _search(tree, key))->data;
-    }
-    else
-    {
-        return error_value;
-    }
-}
-
-bool search(splay_tree * tree, void * key)
-{
-    if (_search(tree, key) != NULL){
+    if (_search(tree, key, bigger_predicate, equal_predicate) != NULL){
         return true;
     }
     return false;
