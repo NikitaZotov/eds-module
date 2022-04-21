@@ -18,6 +18,11 @@ typedef struct splay_tree
     splay_node * root;
 } splay_tree;
 
+/*!
+ * Create new splay node based on input data
+ * @param data pointer on input data
+ * @returns Returns A splay node with input data
+ */
 splay_node * new_node(void * data)
 {
     splay_node * node = malloc(sizeof(*node));
@@ -26,12 +31,21 @@ splay_node * new_node(void * data)
     return node;
 }
 
+/*!
+ * Clean memory occupied by splay node
+ * @param node Node that needs to be stung
+ */
 void delete_node(splay_node * node)
 {
     free(node->left);
     free(node->right);
 }
 
+/**
+ * Finds minimal splay node from the whole tree
+ * @param localRoot Splay node pointer on tree root
+ * @returns Returns A minimal splay node  
+ */
 splay_node * minimum(splay_node * localRoot)
 {
     splay_node * minimum = localRoot;
@@ -44,6 +58,12 @@ splay_node * minimum(splay_node * localRoot)
     return minimum;
 }
 
+
+/*!
+ * Finds maximal from the whole tree
+ * @param local_root Splay node pointer on tree root
+ * @returns Returns A maximal splay node 
+ */
 splay_node * maximum(splay_node * local_root)
 {
     splay_node * maximum = local_root;
@@ -90,6 +110,12 @@ splay_node * _successor(splay_tree * tree, splay_node * local_root)
     return _successor;
 }
 
+/*!
+ * Transplant tree based on local parent and local child
+ * @param tree Splay tree used for transplanting
+ * @param local_parent Splay node used as parent for transplanting
+ * @param local_child Splay node used as child for transplanting
+ */
 void transplant(splay_tree * tree, splay_node * local_parent, splay_node * local_child)
 {
     if (local_parent->parent == NULL)
@@ -111,6 +137,11 @@ void transplant(splay_tree * tree, splay_node * local_parent, splay_node * local
     }
 }
 
+/*!
+ * Rotate tree in left order
+ * @param tree Splay tree used for rotating
+ * @param local_root Splay node used as root for left rotating
+ */
 void left_rotate(splay_tree * tree, splay_node * local_root)
 {
     splay_node * right = local_root->right;
@@ -126,6 +157,11 @@ void left_rotate(splay_tree * tree, splay_node * local_root)
     right->left->parent = right;
 }
 
+/*!
+ * Rotate tree in right order
+ * @param tree Splay tree used for rotating
+ * @param local_root Splay node used as root for right rotating
+ */
 void right_rotate(splay_tree * tree, splay_node * local_root)
 {
     splay_node * left = local_root->left;
@@ -142,6 +178,11 @@ void right_rotate(splay_tree * tree, splay_node * local_root)
     left->right->parent = left;
 }
 
+/**
+ * Splay tree based on pivot splay node 
+ * @param tree Splaying tree
+ * @param pivot_element Splay node used as base for rotating tree
+ */
 void splay(splay_tree * tree, splay_node * pivot_element)
 {
     while (pivot_element != tree->root)
@@ -221,6 +262,10 @@ splay_node * _search(splay_tree * tree, void * key, bool (* bigger_predicate)(vo
     return NULL;
 }
 
+/*!
+ * Creates new tree with NULL root
+ * @returns Returns created tree 
+ */
 splay_tree * new_tree()
 {
     splay_tree * tree = malloc(sizeof(*tree));
@@ -229,11 +274,21 @@ splay_tree * new_tree()
     return tree;
 }
 
+/**
+ * Clean memory which occupied for tree 
+ * @param tree Tree to remove
+ */
 void delete_tree(splay_tree * tree)
 {
     free(tree);
 }
 
+/*!
+ * Insert splay node into tree with input key value
+ * @param tree Splay tree in which the key value will be inserted
+ * @param key Pointer on value which is used as data attribute value for the insertion node
+ * @param bigger_predicate Predicate for comparison on equality between two values
+ */
 void insert(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, void *))
 {
     splay_node * pre_insert_place = malloc(sizeof(* pre_insert_place));
@@ -270,6 +325,13 @@ void insert(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, voi
     splay(tree, insert_element);
 }
 
+/*!
+ * Remove node from splay tree node with input key data
+ * @param tree Splay tree with node to remove
+ * @param key Pointer on key value which has removing node as value of data attribute
+ * @param bigger_predicate Predicate for comparison on bigger/lower between two values
+ * @param equal_predicate Predicate for comparison on equlity between two value
+ */
 void remove_node(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, void *), bool (* equal_predicate)(void *, void *))
 {
     splay_node * removeElement = _search(tree, key, bigger_predicate, equal_predicate);
@@ -309,11 +371,24 @@ void remove_node(splay_tree * tree, void * key, bool (* bigger_predicate)(void *
     }
 }
 
+/**
+ * Check if tree is empty 
+ * @param tree Splay tree which is used for checking on emptiness
+ * @returns Returns True or False based on emptiness of tree
+ */
 bool is_empty(splay_tree * tree)
 {
     return tree->root == NULL;
 }
 
+/**
+ * Find successor of splay node with key value as data attribute
+ * @param tree Splay tree 
+ * @param key Pointer on key value used to find splay node with this key value as data attribute
+ * @param bigger_predicate Predicate for comparison on bigger/lower between two values
+ * @param equal_predicate Predicate for comparison on equlity between two value
+ * @returns Returns successor of element with key value as data attribute
+ */
 void * successor(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, void *), bool (* equal_predicate)(void *, void *))
 {
     if (_successor(tree, _search(tree, key, bigger_predicate, equal_predicate)) != NULL)
@@ -326,6 +401,14 @@ void * successor(splay_tree * tree, void * key, bool (* bigger_predicate)(void *
     }
 }
 
+/*!
+ * Find predecessor of splay node with key value as data attibute
+ * @param tree Splay tree 
+ * @param key Pointer on key value which has splay node for which we find predcessor
+ * @param bigger_predicate Predicate for comparison on bigger/lower between two values
+ * @param equal_predicate Predicate for comparison on equlity between two values 
+ * @returns Return data from predcessor of splay node with input key
+ */
 void * predecessor(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, void *), bool (* equal_predicate)(void *, void *))
 {
     if (_predecessor(tree, _search(tree, key, bigger_predicate, equal_predicate)) != NULL)
@@ -338,6 +421,14 @@ void * predecessor(splay_tree * tree, void * key, bool (* bigger_predicate)(void
     }
 }
 
+/*!
+ * Search splay node in the tree based on key
+ * @param tree Splay tree which is used for searching node with input key
+ * @param key Pointer on key value which is used for splay node searching
+ * @param bigger_predicate Predicate which is used for comparison for bigger/lower
+ * @param equal_predicate Predicate which is used for comparison for equality
+ * @returns Returns True/False based on finding node with input key
+ */
 bool search(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, void *), bool (* equal_predicate)(void *, void *))
 {
     if (_search(tree, key, bigger_predicate, equal_predicate) != NULL){
