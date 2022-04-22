@@ -19,7 +19,7 @@ typedef struct splay_tree
 } splay_tree;
 
 /*!
- * Create new splay node based on input data
+ * Creates new splay node based on input data
  * @param data pointer on input data
  * @returns Returns A splay node with input data
  */
@@ -32,7 +32,7 @@ splay_node * new_node(void * data)
 }
 
 /*!
- * Clean memory occupied by splay node
+ * Cleans memory occupied by splay node
  * @param node Node that needs to be stung
  */
 void delete_node(splay_node * node)
@@ -111,7 +111,7 @@ splay_node * _successor(splay_tree * tree, splay_node * local_root)
 }
 
 /*!
- * Transplant tree based on local parent and local child
+ * Transplants tree based on local parent and local child
  * @param tree Splay tree used for transplanting
  * @param local_parent Splay node used as parent for transplanting
  * @param local_child Splay node used as child for transplanting
@@ -138,7 +138,7 @@ void transplant(splay_tree * tree, splay_node * local_parent, splay_node * local
 }
 
 /*!
- * Rotate tree in left order
+ * Rotates tree in left order
  * @param tree Splay tree used for rotating
  * @param local_root Splay node used as root for left rotating
  */
@@ -158,7 +158,7 @@ void left_rotate(splay_tree * tree, splay_node * local_root)
 }
 
 /*!
- * Rotate tree in right order
+ * Rotates tree in right order
  * @param tree Splay tree used for rotating
  * @param local_root Splay node used as root for right rotating
  */
@@ -179,7 +179,7 @@ void right_rotate(splay_tree * tree, splay_node * local_root)
 }
 
 /**
- * Splay tree based on pivot splay node 
+ * Splays tree based on pivot splay node 
  * @param tree Splaying tree
  * @param pivot_element Splay node used as base for rotating tree
  */
@@ -275,7 +275,7 @@ splay_tree * new_tree()
 }
 
 /**
- * Clean memory which occupied for tree 
+ * Cleans memory which occupied for tree 
  * @param tree Tree to remove
  */
 void delete_tree(splay_tree * tree)
@@ -284,7 +284,7 @@ void delete_tree(splay_tree * tree)
 }
 
 /*!
- * Insert splay node into tree with input key value
+ * Inserts splay node into tree with input key value
  * @param tree Splay tree in which the key value will be inserted
  * @param key Pointer on value which is used as data attribute value for the insertion node
  * @param bigger_predicate Predicate for comparison on equality between two values
@@ -326,7 +326,7 @@ void insert(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, voi
 }
 
 /*!
- * Remove node from splay tree node with input key data
+ * Removes node from splay tree node with input key data
  * @param tree Splay tree with node to remove
  * @param key Pointer on key value which has removing node as value of data attribute
  * @param bigger_predicate Predicate for comparison on bigger/lower between two values
@@ -372,7 +372,7 @@ void remove_node(splay_tree * tree, void * key, bool (* bigger_predicate)(void *
 }
 
 /**
- * Check if tree is empty 
+ * Checks if tree is empty 
  * @param tree Splay tree which is used for checking on emptiness
  * @returns Returns True or False based on emptiness of tree
  */
@@ -382,7 +382,7 @@ bool is_empty(splay_tree * tree)
 }
 
 /**
- * Find successor of splay node with key value as data attribute
+ * Finds successor of splay node with key value as data attribute
  * @param tree Splay tree 
  * @param key Pointer on key value used to find splay node with this key value as data attribute
  * @param bigger_predicate Predicate for comparison on bigger/lower between two values
@@ -402,7 +402,7 @@ void * successor(splay_tree * tree, void * key, bool (* bigger_predicate)(void *
 }
 
 /*!
- * Find predecessor of splay node with key value as data attibute
+ * Finds predecessor of splay node with key value as data attibute
  * @param tree Splay tree 
  * @param key Pointer on key value which has splay node for which we find predcessor
  * @param bigger_predicate Predicate for comparison on bigger/lower between two values
@@ -422,7 +422,7 @@ void * predecessor(splay_tree * tree, void * key, bool (* bigger_predicate)(void
 }
 
 /*!
- * Search splay node in the tree based on key
+ * Looks for splay node in the tree based on key
  * @param tree Splay tree which is used for searching node with input key
  * @param key Pointer on key value which is used for splay node searching
  * @param bigger_predicate Predicate which is used for comparison for bigger/lower
