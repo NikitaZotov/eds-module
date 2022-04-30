@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-int err = -1;
+unsigned int err = -1;
 void * error_value = &err;
 
 typedef struct splay_node
@@ -61,7 +61,7 @@ splay_node * minimum(splay_node * localRoot)
 
 /*!
  * Finds maximal from the whole tree
- * @param local_root Splay node pointer on tree root
+ * @param local_root Splay node pounsigned inter on tree root
  * @returns Returns A maximal splay node 
  */
 splay_node * maximum(splay_node * local_root)
@@ -298,7 +298,7 @@ void insert(splay_tree * tree, void * key, bool (* bigger_predicate)(void *, voi
     while (insert_place != NULL)
     {
         pre_insert_place = insert_place;
-
+        
         if (bigger_predicate(key, insert_place->data))
         {
             insert_place = insert_place->right;

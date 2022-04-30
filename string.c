@@ -3,12 +3,12 @@
 typedef struct splay_string
 {
     splay_tree * tree;
-    int nodes_count;
+    const unsigned int nodes_count;
 } splay_string;
 
 typedef struct string_element
 {
-    int index;
+    unsigned int index;
     char * element;
 } string_element;
 
@@ -22,7 +22,7 @@ bool equal_predicate(void * first_element, void * second_element)
     return ((string_element *)(first_element))->index == ((string_element *)(second_element))->index;
 }
 
-string_element * new_string_element(int index, char * element)
+string_element * new_string_element(unsigned int index, char * element)
 {
     string_element * str_element = malloc(sizeof(*str_element));
     str_element->element = element;
@@ -30,9 +30,9 @@ string_element * new_string_element(int index, char * element)
     return str_element;
 }
 
-int strlen(char * string)
+unsigned int strlen(char * string)
 {
-    int length = 0;
+    unsigned int length = 0;
     char el = string[length];
     while (el != '\0')
     {
@@ -45,30 +45,29 @@ int strlen(char * string)
 splay_string * new_string(char * char_string)
 {
     splay_string * string = malloc(sizeof(*string));
+    *(unsigned int *)&string->nodes_count = strlen(char_string);
     string->tree = new_tree();
-    string->nodes_count = 0;
-    for (int i = 0; i < strlen(char_string); ++i)
+    for (unsigned int i = 0; i < string->nodes_count; ++i)
     {
         string_element * element = new_string_element(i, &char_string[i]);
         insert(string->tree, element, bigger_predicate);
-        ++string->nodes_count;
     }
     return string;
 }
 
-void set_indices(int * start_index, int * last_index, splay_string * string)
+void set_indices(unsigned int * start_index, unsigned int * last_index, splay_string * string)
 {
     *start_index = 0;
     *last_index = string->nodes_count;
 }
 
-int find_substring(splay_string * string, splay_string * substring, int start_index, int end_index)
+unsigned int find_substring(splay_string * string, splay_string * substring, unsigned int start_index, unsigned int end_index)
 {
    set_indices(&start_index, &end_index, string); 
-   int substring_length = substring->nodes_count;
-   for (int i = 0; i < end_index - substring_length + 1; ++i)
+   unsigned int substring_length = substring->nodes_count;
+   for (unsigned int i = 0; i < end_index - substring_length + 1; ++i)
    {
-       int j = 0;
+       unsigned int j = 0;
        while (j < substring_length)
        {
            string_element * str_element = new_string_element(i + j, NULL);
@@ -88,16 +87,16 @@ int find_substring(splay_string * string, splay_string * substring, int start_in
            return i;
        }
    }
-   int not_found_code = -1;     
+   unsigned int not_found_code = -1;     
    return not_found_code;
 }
 
-int main(){
+unsigned int main(){
     char * string = "Hello!";
     char * substring = "!";
     splay_string * string_ = new_string(string);
     splay_string * substring_ = new_string(substring);
-    int start, end;
+    unsigned int start, end;
     printf("%d", find_substring(string_, substring_, start, end));
     return 0;
 }
